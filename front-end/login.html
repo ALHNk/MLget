@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href = "auth.css">
+
+</head>
+<body>
+    
+    <form id="loginForm">
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Пароль" required>
+        <button type="submit">Login</button>
+    </form>
+    <a href="register.html"><button> Sign up</button></a>
+
+    <script>
+        const form = document.getElementById('loginForm');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('http://localhost:8080/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка логина, брат');
+                }
+
+                const data = await response;
+                // console.log('Успех, красавчик:', data);
+                alert('логинка прошла успешно!');
+            } catch (error) {
+                console.error('Провалился:', error);
+                alert('Ошибка при логине!');
+            }
+        });
+    </script>
+
+</body>
+</html>

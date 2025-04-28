@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration</title>
+    <link rel="stylesheet" href = "auth.css">
+</head>
+<body>
+
+    <form id="registerForm">
+        <h2>Регистрация</h2>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Пароль" required>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+    <br>
+    <br>
+    <a href="login.html"><button> Login</button></a>
+
+    <script>
+        const form = document.getElementById('registerForm');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('http://localhost:8080/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка регистрации, брат');
+                }
+
+                const data = await response;
+                console.log('Успех, красавчик:', data);
+                alert('Регистрация прошла успешно!');
+            } catch (error) {
+                console.error('Провалился:', error);
+                alert('Ошибка при регистрации!');
+            }
+        });
+    </script>
+
+</body>
+</html>
