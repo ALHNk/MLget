@@ -18,11 +18,16 @@ def train(model):
     if model == "knn":
         try:
             base_path = os.path.dirname(__file__)
-            file_path = os.path.join(base_path, '..', 'dataset_manage', 'datasets', 'train_data_laptops.csv')
-            train = pd.read_csv(file_path, sep = ",")
+            file_path_1 = os.path.join(base_path, '..', 'dataset_manage', 'datasets', 'train_data_laptops.csv')
+            # file_path_2 = os.path.join(base_path, '..', 'dataset_manage', 'datasets', 'test_data_laptops.csv')
+            train = pd.read_csv(file_path_1, sep = ",")
+            # test = pd.read_csv(file_path_2, sep = ",")
             X = train["text"]
             y = train["rating"]
             X = pd.Series(X).astype(str)
+            # X_test = test["text"]
+            # y_test = test["rating"]
+            # X_test = pd.Series(X_test).astype(str)
             return model_knn.train(X, y)
         except Exception as e:
             return "Failed to read csv"        
