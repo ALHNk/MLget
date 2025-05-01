@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Text Classification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --accent: #4caf50;
+      --text: #f0f0f0;
+      --danger: #f44336;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: var(--card);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      max-width: 600px;
+      width: 100%;
+      position: relative;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: var(--accent);
+      font-size: 26px;
+      text-align: center;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 16px;
+      background-color: #2c2c2c;
+      color: var(--text);
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 20px;
+      background-color: var(--accent);
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #3e8e41;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .error {
+      color: var(--danger);
+    }
+
+    .train-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #2196f3;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .train-btn:hover {
+      background-color: #0b7dda;
+    }
+  </style>
+</head>
+<body>
+  <button class="train-btn" onclick="trainModel()" style = "width:80px">Train</button>
+  <div class="card">
+   
+    <h1>Text Classification</h1>
+    <input type="text" id="userInput" placeholder="Enter your sentence...">
+    <button onclick="sendQuery()">Classify</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function sendQuery() {
+      const sentence = document.getElementById("userInput").value.trim();
+      const resultDiv = document.getElementById("result");
+
+      resultDiv.classList.remove("error");
+      resultDiv.textContent = "";
+
+      if (!sentence) {
+        resultDiv.textContent = "Please enter a sentence.";
+        resultDiv.classList.add("error");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:8000/classification/predict", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ text: sentence })
+        });
+
+        if (!response.ok) {
+          throw new Error("Server error: " + response.statusText);
+        }
+
+        const data = await response.json();
+        resultDiv.textContent = "Prediction: " + data.prediction;
+      } catch (error) {
+        resultDiv.textContent = "Error: " + error.message;
+        resultDiv.classList.add("error");
+      }
+    }
+
+    async function trainModel() {
+      const resultDiv = document.getElementById("result");
+      resultDiv.classList.remove("error");
+      resultDiv.textContent = "";
+
+      try {
+        const response = await fetch("http://localhost:8000/classification/train", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ model: "knn", query:"t" })
+        });
+
+        if (!response.ok) {
+          throw new Error("Training failed: " + response.statusText);
+        }
+
+        const data = await response.json();
+        resultDiv.textContent = "Training complete: " + data.answer;
+      } catch (error) {
+        resultDiv.textContent = "Error: " + error.message;
+        resultDiv.classList.add("error");
+      }
+    }
+  </script>
+</body>
+</html>
