@@ -10,6 +10,7 @@ router = APIRouter(prefix="/classification")
 class QueryRequest(BaseModel):
     query: str
     model: str
+    dataset:str
 
 @router.get("/")
 def func():
@@ -18,10 +19,11 @@ def func():
 @router.post("/predict")
 def predict(request: QueryRequest):
     print(f"router:{request.query} ")
-    answer = class_serv.predict(request.query, request.model)
+    answer = class_serv.predict(request.query, request.model, request.dataset)
     return {"prediction": answer}
 
 @router.post("/train")
 def train(request: QueryRequest):
-    answer = class_serv.train(request.model)
+    print("Started training")
+    answer = class_serv.train(request.model, request.dataset)
     return {"answer": answer}

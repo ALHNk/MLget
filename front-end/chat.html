@@ -101,6 +101,41 @@
     .train-btn:hover {
       background-color: #0b7dda;
     }
+    .select-wrapper {
+      margin-top: 1%;
+      position: relative;
+      display: inline-block;
+      width: 200px;
+    }
+
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      width: 100%;
+      padding: 12px;
+      background-color: #222;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .select-wrapper::after {
+      content: "▼";
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: #aaa;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #0f0;
+    }
   </style>
 </head>
 <body>
@@ -109,6 +144,15 @@
    
     <h1>Text Classification</h1>
     <input type="text" id="userInput" placeholder="Enter your sentence...">
+    <div class="select-wrapper">
+      <label for = "select"> Choose a model</label>
+      <select id = "select">
+        <!-- <option value=""></option> -->
+        <option value="knn">K-Nearest-Neighbors</option>
+        <option value="xgb">eXtreme Gradient Boosting</option>
+        <option value="lstm">LSTM</option>
+      </select>
+    </div>
     <button onclick="sendQuery()">Classify</button>
     <div id="result"></div>
   </div>
@@ -116,6 +160,7 @@
   <script>
     async function sendQuery() {
       const sentence = document.getElementById("userInput").value.trim();
+      const model = document.getElementById("select").value;
       const resultDiv = document.getElementById("result");
 
       resultDiv.classList.remove("error");
@@ -133,7 +178,7 @@
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ query: sentence, model:"knn" })
+          body: JSON.stringify({ query: sentence, model:model, dataset:"laptops" })
         });
 
         if (!response.ok) {
@@ -150,16 +195,17 @@
 
     async function trainModel() {
       const resultDiv = document.getElementById("result");
+      const model = document.getElementById("select").value ;
       resultDiv.classList.remove("error");
       resultDiv.textContent = "";
-
+      // alert(model)
       try {
         const response = await fetch("http://localhost:8000/classification/train", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ model: "knn", query:"t" })
+          body: JSON.stringify({ model: model, query:"t", dataset:"laptops" })
         });
 
         if (!response.ok) {
